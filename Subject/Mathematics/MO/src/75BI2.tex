@@ -1,0 +1,90 @@
+\documentclass{MO}
+
+% Set your information here
+\author{Dominik Dembinný}
+\studentclass{2. F / 4 Gymnázium}
+\school{Arabská 14, Praha 6}
+
+% Logic: {Year}{Category}{Round}{Problem Number} 
+% To get "75. B-I-2"
+\problemcategory{75}{B}{I}{2}
+
+\begin{document}
+
+\makeMOheader
+
+\section*{Pozorování}
+
+Pro každé přirozené číslo platí, že je možné ho rozložit na součin prvočísel. Pro $n = 1$ $a = 0$.
+\begin{align*}
+    n \in N &: n = \prod_{i} p_i^{a_i} \\
+    p_i &\in \mathbb{P}
+\end{align*}
+Kde $p_i$ je prvočíslo z množiny $\mathbb{P}$ všech prvočísel a $a_i$ je exponent $i$-tého prvočísla ze součinu.
+Každý dělitel $d$ je následně \It{skládán} z těchto prvočísel.
+\begin{align*}
+    d &\in D \\
+    d &= \prod p_i^{\omega_i} \\
+    \omega_i &\in \{0, 1, 2, ..., a_i\}
+\end{align*}
+
+\subsection*{Počet dělitelů}
+Existuje $a_1 + 1$ dělitelů a
+pro každé $\omega_1$ existuje $a_2 + 1$ dělitelů a
+pro každé $\omega_i$ existuje dalších $a_{i + 1} + 1$ dělitelů.
+Jejich výsledný počet získáme součinem všech prvků $a_i + 1$.
+\begin{align*}
+    \tau &= (a_1 + 1) \cdot (a_2 + 1) \cdot (a_3 + 1) \dots \\
+    \tau &= \prod (a_i + 1)
+\end{align*}
+Kde $\tau$ je počet dělitelů.
+
+\subsection*{Součin dělitelů}
+Ke každému děliteli $d$ existuje dělitel $\frac{n}{d}$.
+Součinem těchto dvou dělitelů získáme $n$.
+\begin{align*}
+    \frac{n}{d} &\in D \\
+    n &= n \cdot \frac{n}{d} \\
+    \sigma &= \prod^{\tau} d_i \\
+    \sigma^2 &= \prod^{\tau} d_i \prod^{\tau} d_i \\
+    \sigma^2 &= \prod^{\tau} d_i \prod^{\tau} \frac{n}{d_i} \\
+    \sigma^2 &= \prod^{\tau} (d_i \cdot \frac{n}{d_i}) \\
+    \sigma^2 &= \prod^{\tau} n \\
+    \sigma^2 &= n^{\tau} \\
+    \sigma &= n^{1/2 \cdot \tau}
+\end{align*}
+Kde $\sigma$ je součin všech dělitelů.
+
+\section*{Důkaz}
+Označíme si číslo, pro které se snažíme dokázat tvrzení, $a$. \\
+Označíme $m$, tak že $\overline{m90}=a$, neboli:
+\begin{align*}
+    m \cdot 100 + 90 &= a \\
+    10 \cdot (10m + 9) &= a \\
+    a &= 10k\ \ \ (k \in \mathbb{N}) \\
+    \implies p_1 = 2,\ p_2 = 5
+\end{align*}
+Číslo $a$ je $10$ násobkem přirozeného čísla a v rozkladu prvočísel se vyskytne $2$ a $5$.
+
+Proto počet dělitelů bude minimálně $4$.
+\begin{align*}
+    \tau &= (a_1 + 1) \cdot (a_2 + 1) \cdot (a_3 + 1) \dots \\
+    \tau &= (1 + 1) \cdot (1 + 1) \cdot (a_3 + 1) \dots \\
+    \tau &= 4 \cdot (a_3 + 1) \dots \\
+    (a_3 + 1) \cdot (a_4 + 1) \dots &= t \\
+    \tau &= 4 \cdot t
+\end{align*}
+\begin{align*}
+    \sigma &= n^{1/2 \cdot \tau} \\
+    \sigma &= n^{1/2 \cdot 4 \cdot t} \\
+    \sigma &= n^{2 \cdot t} \\
+    \sigma &= (n^t)^2 \\
+    \sigma &= k^2 \quad (k \in \mathbb{N})
+\end{align*}
+Kde $n$ je původní číslo, $t$ je přirozené číslo a $\sigma$ je součin všech kladných dělitelů.
+
+\vspace{1cm}
+\raggedleft
+$\boxdot$ Což bylo dokázati.
+
+\end{document}

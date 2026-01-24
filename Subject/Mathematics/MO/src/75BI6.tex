@@ -1,0 +1,41 @@
+\documentclass{MO}
+
+
+\author{Dominik Dembinný}
+\studentclass{2. F / 4 Gymnázium}
+\school{Arabská 14, Praha 6}
+
+\problemcategory{75}{B}{I}{4}
+
+\begin{document}
+\makeMOheader
+
+\section*{Krok 1: Trik tří barev}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{75BI5/step_1_three_color_trick.pdf}
+    \caption*{Pokud obarvíme mřížku třemi barvami, zjistíme, že jezdci jsou "uzamčeni" na své barvě. To rozděluje problém na tři menší, nezávislé desky.}
+\end{figure}
+
+\section*{Krok 2: Izolace vrstev}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{75BI5/step_2_red_layer_separation.pdf}
+    \caption*{Zde vidíme pouze "červenou" vrstvu (21 polí). Můžeme ji vyřešit nezávisle na zelené a modré vrstvě.}
+\end{figure}
+
+\section*{Krok 3: Logika trojúhelníků}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{75BI5/step_3_triangle_logic.pdf}
+    \caption*{Vzájemná ohrožení tvoří trojúhelníkovou mřížku. V jakémkoli trojúhelníku tří vzájemně se ohrožujících polí můžeme umístit pouze 1 jezdce. Hustota je tedy 1/3.}
+\end{figure}
+
+\section*{Krok 4: Konečné řešení}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{75BI5/step_4_final_solution.pdf}
+    \caption*{Opakováním tohoto vzoru pro všechny tři barvy dostáváme $7 + 7 + 7 = 21$ jezdců.}
+\end{figure}
+
+\end{document}

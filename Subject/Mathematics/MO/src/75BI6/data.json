@@ -1,0 +1,44 @@
+[
+    {
+        "filename": "step_1_three_color_trick.pdf",
+        "title": "1. Trik tří barev",
+        "description": "Každé pole má jednu ze tří barev. Jezdci mohou skákat POUZE na pole stejné barvy.",
+        "show_grid": true,
+        "color_mode": "modulo_3",
+        "filter_layer": null,
+        "show_edges": false,
+        "show_knights": false
+    },
+    {
+        "filename": "step_2_red_layer_separation.pdf",
+        "title": "2. Izolace červené vrstvy",
+        "description": "Skryjeme ostatní barvy. Těchto 21 červených polí tvoří zcela samostatný problém.",
+        "show_grid": true,
+        "color_mode": "modulo_3",
+        "filter_layer": 0,
+        "show_edges": false,
+        "show_knights": false
+    },
+    {
+        "filename": "step_3_triangle_logic.pdf",
+        "title": "3. Trojúhelníková síť",
+        "description": "Spojením skoků vzniká síť trojúhelníků. Do každého trojúhelníku se vejde jen 1 jezdec.",
+        "show_grid": true,
+        "color_mode": "modulo_3",
+        "filter_layer": 0,
+        "show_edges": true,
+        "show_knights": true,
+        "auto_solve": true
+    },
+    {
+        "filename": "step_4_final_solution.pdf",
+        "title": "4. Konečný součet (21 jezdců)",
+        "description": "Aplikace pravidla 1/3 na všechny vrstvy: 7 červených + 7 zelených + 7 modrých = 21.",
+        "show_grid": true,
+        "color_mode": "modulo_3",
+        "filter_layer": null,
+        "show_edges": false,
+        "show_knights": true,
+        "auto_solve": true
+    }
+]

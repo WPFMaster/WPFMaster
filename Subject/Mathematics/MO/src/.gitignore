@@ -1,0 +1,16 @@
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lolistedequation
+*.lot
+*-blx.bib
+*.log
+*.out
+*.nav
+*.snm

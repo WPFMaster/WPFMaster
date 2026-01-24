@@ -1,0 +1,56 @@
+\documentclass{MO}
+
+\author{Dominik Dembinný}
+\studentclass{2. F / 4 Gymnázium}
+\school{Arabská 14, Praha 6}
+
+\problemcategory{75}{B}{I}{4}
+
+\begin{document}
+\makeMOheader
+
+\section*{Pozorování}
+\subsection*{Definiční obor}
+Budeme pozorovat, jakých hodnot může nabývat $a$ a $b$, tak aby splňovali následující nerovnice:
+\begin{align}
+    a + b &> 0 \\
+    ab &> 0
+\end{align}
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        $a$ & $b$ & $ab$ & $a + b$ & (1) $\land$ (2) \\ \hline
+        $+$ & $+$ & $+$ & $+$ & ano \\ \hline
+        $-$ & $+$ & $-$ & $?$ & ne \\ \hline
+        $-$ & $-$ & $+$ & $-$ & ne \\ \hline
+        $0$ & $+$ & $0$ & $+$ & ne \\ \hline
+    \end{tabular}
+\end{center}
+Z tabulky můžeme vyčíst, že $a, b \in \mathbb{R}^{+}$.
+
+\section*{Řešení}
+Nejmenší hodnota a + b bude ležet na hranici, kde $ab = a + b$.
+Nejprve najdeme pomocí derivace sklon $\dv{b}{a}$ v minimu.
+\begin{align*}
+    S &= a + b \\
+    dS &= da + db \\
+    da + db &= 0 \\
+    \dv{b}{a} &= -1
+\end{align*}
+\begin{align*}
+    ab &= a + b \\
+    \dv{a} (ab) &= \dv{a} (a + b) \\
+    b + a \dv{b}{a} &= 1 + \dv{b}{a} \\
+    b + a \cdot (-1) &= 1 + (-1) \\
+    b - a &= 0 \\
+    &\implies a = b
+\end{align*}
+Dokázali jsme, že $a$ se musí rovnat v minimu $b$.
+\begin{align*}
+    a^2 &= 2a \\
+    a > 0 &\implies a = 2 \land b = 2 \\
+    S &= 4
+\end{align*}
+Součet $a + b$ musí být nejméně $4$, aby nerovnosti platily.
+
+\end{document}
