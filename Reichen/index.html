@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strategy Game Interface</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #ui-panel {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #2d2d2d;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: #005f9e; }
+        button.active { background-color: #e63946; }
+
+        #status {
+            font-family: monospace;
+            color: #aaaaaa;
+        }
+
+        #gameCanvas {
+            background-color: #121212;
+            cursor: crosshair;
+            margin-top: 10px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .instructions {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-panel">
+        <div>
+            <h1>DeepRL Strategy Engine</h1>
+            <span id="status">Tick: 0 | Connecting...</span>
+        </div>
+        <div class="controls">
+            <span id="move-info">Action: Select Source</span>
+            <button onclick="resetGame()">Reset Game</button>
+            <button id="ai-btn" onclick="toggleAI()">Watch AI</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div class="instructions">
+        <strong>Controls:</strong> Click Node (Source) &rarr; Click Node (Target). 
+        Press <strong>1-9</strong> to set Army % (Current: <span id="split-display">50%</span>).
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_URL = "http://localhost:8000";
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 600;
+        const NODE_RADIUS = 20;
+
+        // Colors
+        const COLORS = {
+            0: "#777777", // Neutral
+            1: "#3498db", // Player 1 (Blue)
+            2: "#e74c3c", // Player 2 (Red)
+            border: "#ffffff",
+            highlight: "#f1c40f", // Selection
+            text: "#ffffff"
+        };
+
+        // --- STATE ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game State Data
+        let nodes = [];
+        let edges = [];
+        let tick = 0;
+        
+        // Interaction State
+        let selectedSource = null;
+        let splitPercentageIndex = 4; // Default 5 (50%) -> Index 4 (10% is 0)
+        let aiInterval = null;
+
+        // Setup Canvas
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        // --- API CALLS ---
+        
+        async function fetchStart() {
+            try {
+                const res = await fetch(`${API_URL}/start`);
+                const data = await res.json();
+                updateState(data);
+                log("Game Started");
+            } catch (e) {
+                log("Error connecting to server. Is python server.py running?");
+            }
+        }
+
+        async function sendMove(sourceId, targetId) {
+            try {
+                const payload = {
+                    source_id: sourceId,
+                    target_id: targetId,
+                    split_index: splitPercentageIndex
+                };
+                
+                const res = await fetch(`${API_URL}/step`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                updateState(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchAutoStep() {
+            try {
+                const res = await fetch(`${API_URL}/auto_step`);
+                const data = await res.json();
+                updateState(data);
+                
+                if (data.game_over) {
+                    toggleAI(); // Stop if game ends
+                    alert(`Game Over! Winner: Player ${data.winner}`);
+                }
+            } catch (e) {
+                console.error("AI Step Failed", e);
+                toggleAI(); // Stop on error
+            }
+        }
+
+        // --- GAME LOGIC ---
+
+        function updateState(data) {
+            nodes = data.nodes;
+            edges = data.edges;
+            tick = data.tick;
+            document.getElementById('status').innerText = `Tick: ${tick} | Nodes: ${nodes.length}`;
+            draw();
+        }
+
+        function resetGame() {
+            if (aiInterval) toggleAI(); // Stop AI if running
+            selectedSource = null;
+            fetchStart();
+        }
+
+        function toggleAI() {
+            const btn = document.getElementById('ai-btn');
+            if (aiInterval) {
+                clearInterval(aiInterval);
+                aiInterval = null;
+                btn.innerText = "Watch AI";
+                btn.classList.remove("active");
+            } else {
+                aiInterval = setInterval(fetchAutoStep, 100); // 100ms per tick
+                btn.innerText = "Stop AI";
+                btn.classList.add("active");
+            }
+        }
+
+        function log(msg) {
+            document.getElementById('status').innerText = msg;
+        }
+
+        // --- RENDERING ---
+
+        // Map abstract coordinates (-1 to 1) to Canvas pixels
+        function mapX(val) { return (val + 1) / 2 * (CANVAS_WIDTH - 100) + 50; }
+        function mapY(val) { return (val + 1) / 2 * (CANVAS_HEIGHT - 100) + 50; }
+
+        function draw() {
+            // Clear Screen
+            ctx.fillStyle = "#121212";
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Draw Connections (Edges)
+            ctx.strokeStyle = "#555";
+            ctx.lineWidth = 2;
+            
+            edges.forEach(edge => {
+                const n1 = nodes.find(n => n.id === edge[0]);
+                const n2 = nodes.find(n => n.id === edge[1]);
+                if (n1 && n2) {
+                    ctx.beginPath();
+                    ctx.moveTo(mapX(n1.x), mapY(n1.y));
+                    ctx.lineTo(mapX(n2.x), mapY(n2.y));
+                    ctx.stroke();
+                }
+            });
+
+            // Draw Nodes
+            nodes.forEach(node => {
+                const cx = mapX(node.x);
+                const cy = mapY(node.y);
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, NODE_RADIUS, 0, Math.PI * 2);
+                
+                // Fill Color based on owner
+                ctx.fillStyle = COLORS[node.owner] || COLORS[0];
+                ctx.fill();
+
+                // Selection Highlight
+                if (selectedSource && selectedSource.id === node.id) {
+                    ctx.lineWidth = 4;
+                    ctx.strokeStyle = COLORS.highlight;
+                    ctx.stroke();
+                } else {
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = COLORS.border;
+                    ctx.stroke();
+                }
+
+                // Army Count Text
+                ctx.fillStyle = COLORS.text;
+                ctx.font = "bold 14px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.army, cx, cy);
+            });
+        }
+
+        // --- INTERACTION ---
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Hit Test
+            const clickedNode = nodes.find(node => {
+                const nx = mapX(node.x);
+                const ny = mapY(node.y);
+                const dist = Math.sqrt((mouseX - nx)**2 + (mouseY - ny)**2);
+                return dist < NODE_RADIUS + 5; // +5 tolerance
+            });
+
+            if (clickedNode) {
+                handleNodeClick(clickedNode);
+            } else {
+                // Clicked empty space -> Deselect
+                selectedSource = null;
+                document.getElementById('move-info').innerText = "Action: Select Source";
+                draw();
+            }
+        });
+
+        function handleNodeClick(node) {
+            // If nothing selected, select this as source
+            if (!selectedSource) {
+                if (node.owner === 1) { // Can only select own nodes (Player 1)
+                    selectedSource = node;
+                    document.getElementById('move-info').innerText = `Source: Node ${node.id} -> Select Target`;
+                } else {
+                    log("Can only move Player 1 units!");
+                }
+            } 
+            // If source selected, this is the target
+            else {
+                if (node.id === selectedSource.id) {
+                    // Clicked same node -> Deselect
+                    selectedSource = null;
+                    document.getElementById('move-info').innerText = "Action: Select Source";
+                } else {
+                    // Execute Move
+                    sendMove(selectedSource.id, node.id);
+                    selectedSource = null;
+                    document.getElementById('move-info').innerText = "Action: Select Source";
+                }
+            }
+            draw();
+        }
+
+        // Keyboard Listener for Split Percentage
+        window.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '9') {
+                const num = parseInt(e.key);
+                splitPercentageIndex = num - 1; // 1 -> 0 (10%), 9 -> 8 (90%)
+                // Special case: 0 key for 100%? Let's just stick to 1-9 for simplicity as per requirements
+                document.getElementById('split-display').innerText = (num * 10) + "%";
+            }
+        });
+
+        // Initialize
+        fetchStart();
+
+    </script>
+</body>
+</html>
