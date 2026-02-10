@@ -51,12 +51,12 @@ class AbstractMap:
         # Player 1 setup
         p1_node = start_nodes[0]
         self.state[p1_node, 0] = PlayerId.PLAYER_1
-        self.state[p1_node, 1] = 20  # Stronger starting army
+        self.state[p1_node, 1] = self.config.PLAYER_ARMY + self.config.ADVANTAGE  # Stronger starting army
         
         # Player 2 setup
         p2_node = start_nodes[1]
         self.state[p2_node, 0] = PlayerId.PLAYER_2
-        self.state[p2_node, 1] = 20  # Stronger starting army
+        self.state[p2_node, 1] = self.config.PLAYER_ARMY  # Stronger starting army
 
     def get_valid_moves(self, player_id: int) -> List[Action]:
         """

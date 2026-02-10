@@ -146,7 +146,7 @@ class StrategyGameEnv(gym.Env):
         # # Reset tracking stats
         p1_mask = (self.game_map.state[:, 0] == PlayerId.PLAYER_1)
         p2_mask = (self.game_map.state[:, 0] == PlayerId.PLAYER_2)
-        
+
         self.prev_node_count = np.sum(p1_mask)
         self.prev_army_count = np.sum(self.game_map.state[p1_mask, 1])
 
@@ -224,6 +224,10 @@ class StrategyGameEnv(gym.Env):
         current_p1_army = np.sum(self.game_map.state[p1_mask, 1])
         current_p2_army = np.sum(self.game_map.state[p2_mask, 1])
 
+        # 1. SIZE
+        # Bigger size  ->  better
+        reward += 0.25 * current_node_count
+
         # 3. ATTRITION (The "Killer" Reward)
         # Did we kill enemy units? (We infer this if enemy army dropped)
         # Note: This is a rough heuristic, but effective.
@@ -239,8 +243,7 @@ class StrategyGameEnv(gym.Env):
         if node_diff > 0:
             reward += 2.0 * node_diff  # Big bonus for taking a node
         elif node_diff < 0:
-            reward += 2.0 * node_diff  # Big penalty for losing a node
-
+            reward += 1.0 * node_diff  # Big penalty for losing a node
 
             
         # Reward: Winning
@@ -253,6 +256,8 @@ class StrategyGameEnv(gym.Env):
         elif winner == PlayerId.PLAYER_2:
             reward -= 100.0 # Penalty for losing
             terminated = True
+        elif winner == PlayerId.NEUTRAL:
+            reward -= 10.0
             
         # Update tracking stats
         self.prev_node_count = current_node_count

@@ -4,6 +4,8 @@ import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from gym_env import StrategyGameEnv
 from callbacks import GameStatsCallback
@@ -33,11 +35,16 @@ def train_agent(total_timesteps=100000):
     print(f"--- Starting Training ({total_timesteps} timesteps) ---")
     
     # Vectorized environments allow for faster training
-    env = DummyVecEnv([lambda: StrategyGameEnv()])
-    
+    env = make_vec_env(
+        StrategyGameEnv, 
+        n_envs=16, 
+        seed=0, 
+        vec_env_cls=SubprocVecEnv
+    )
+
     # Initialize the PPO agent
     # MlpPolicy is used because our input is a set of vectors/matrices, not images
-    model = PPO("MultiInputPolicy", env, tensorboard_log="./ppo_strategy_tensorboard/")
+    model = PPO("MultiInputPolicy", env, tensorboard_log="./ppo_strategy_tensorboard/", device="cuda")
     
     my_callback = GameStatsCallback()
 

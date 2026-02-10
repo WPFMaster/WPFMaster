@@ -49,6 +49,9 @@ class GameConfig:
     # Growth Amounts
     SMALL_GROWTH: int = 1       # Base growth for standard nodes
     BIG_GROWTH: int = 5         # Bonus growth for big nodes or during filling phase
+
+    PLAYER_ARMY: int = 10
+    ADVANTAGE: int = 5
     
     # Limits to prevent infinite numbers in training
     MAX_ARMIES_CAP: int = 1000
@@ -57,4 +60,4 @@ class GameConfig:
     # Visualization / Debug
     RENDER_FPS: int = 30
 
-    MAX_TIMEOUT_TICKS: int = 200  # Max ticks before auto-termination
+    MAX_TIMEOUT_TICKS: int = 100  # Max ticks before auto-termination
